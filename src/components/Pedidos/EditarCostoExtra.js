@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { Dropdown, Nav, Modal, Button, Form, Row, Col } from "react-bootstrap";
 
-const EditarCostoExtra = ({ onEditClick, item }) => {
+const EditarCostoExtra = ({ onEditClick, item, onUpdateTableGasto }) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+
+  const [concepto, setConcepto] = useState(item.concepto || "");
+  const [gasto, setGasto] = useState(item.gasto || "");
 
   const handleButtonClick = () => {
     console.log(item);
@@ -21,21 +25,72 @@ const EditarCostoExtra = ({ onEditClick, item }) => {
     setShowDeleteConfirmation(true);
   };
 
-  const handleConfirmDelete = () => {
+  //Eliminar Gasto
+  const handleConfirmDelete = async () => {
     // Add logic to handle delete confirmation
     setShowDeleteConfirmation(false);
-    // Perform delete action
-    handleCloseModal(); // Close main modal after deletion
+    const config = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const r = await fetch(
+      "http://localhost:3000/api/v1/gastoExtra/" + item.pedido,
+      config
+    ).then((res) => res.json());
+
+    console.log(r);
+    switch (r.status) {
+      case 401:
+        alert(r.message);
+        break;
+      case 201:
+        onUpdateTableGasto();
+        alert(r.message);
+        handleCloseModal();
+        break;
+    }
   };
 
   const handleCloseDeleteConfirmation = () => {
     setShowDeleteConfirmation(false);
   };
 
-  const handleSubmit = (e) => {
+  //Editar Gasto
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Add logic to handle form submission, e.g., updating profile
-    handleCloseModal();
+    const payload = {
+      concepto: concepto,
+      gasto: gasto,
+    };
+
+    const config = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    };
+
+    const r = await fetch(
+      "http://localhost:3000/api/v1/gastoExtra/" + item.pedido,
+      config
+    ).then((res) => res.json());
+
+    console.log(r);
+    switch (r.status) {
+      case 401:
+        alert(r.message);
+        break;
+      case 201:
+        onUpdateTableGasto();
+        alert(r.message);
+        handleCloseModal();
+        break;
+    }
   };
 
   const EditarClienteBtn = ({ onEditClick, item }) => {
@@ -65,7 +120,7 @@ const EditarCostoExtra = ({ onEditClick, item }) => {
       {/* Main Modal */}
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Editar costo extra</Modal.Title>
+          <Modal.Title>Editar gasto extra</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
@@ -73,45 +128,34 @@ const EditarCostoExtra = ({ onEditClick, item }) => {
               <Col>
                 <Form.Group controlId="formBasicName">
                   <Form.Label>Pedido</Form.Label>
-                  <Form.Control as="select">
-                    <option value="">Escoge...</option>
-                    <option value="electronic">Electronics</option>
-                    <option value="clothing">Clothing</option>
-                    <option value="furniture">Furniture</option>
-                    {/* Add more options as needed */}
-                  </Form.Control>
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <Form.Group controlId="formBasicEmail">
-                  <Form.Label>Precio compra</Form.Label>
-
-                  <Form.Control type="number" placeholder="$0.00" />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group controlId="formBasicEmail">
-                  <Form.Label>Proveedor</Form.Label>
-                  <Form.Control type="text" placeholder="Pieza..." />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group controlId="formBasicEmail">
-                  <Form.Label>Gastos</Form.Label>
-                  <Form.Control type="number" placeholder="$0.00" />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col>
-                <Form.Group controlId="formBasicName">
-                  <Form.Label>Razon del gasto</Form.Label>
                   <Form.Control
                     type="text"
-                    placeholder="Se necesitaba nueva...."
+                    defaultValue={
+                      "#" +
+                      item.pedido 
+                    }
+                    disabled={true}
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col>
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Concepto</Form.Label>
+                  <Form.Control
+                    type="text"
+                    onChange={(e) => setConcepto(e.target.value)}
+                    defaultValue={item.concepto}
+                  />
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Precio venta</Form.Label>
+                  <Form.Control
+                    type="number"
+                    onChange={(e) => setGasto(e.target.value)}
+                    defaultValue={item.gasto}
                   />
                 </Form.Group>
               </Col>
@@ -120,7 +164,7 @@ const EditarCostoExtra = ({ onEditClick, item }) => {
             <Row>
               <Col>
                 <Button variant="primary" type="submit" className="mr-3">
-                  Agregar
+                  Editar
                 </Button>
 
                 <Button variant="secondary" onClick={handleCloseModal}>
@@ -141,7 +185,7 @@ const EditarCostoExtra = ({ onEditClick, item }) => {
         <Modal.Header closeButton>
           <Modal.Title>Confirmar Eliminación</Modal.Title>
         </Modal.Header>
-        <Modal.Body>¿Está seguro de que desea eliminar este costo?</Modal.Body>
+        <Modal.Body>¿Está seguro de que desea eliminar este gasto?</Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={handleConfirmDelete}>
             Eliminar

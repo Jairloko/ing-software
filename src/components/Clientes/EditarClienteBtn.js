@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 import { Dropdown, Nav, Modal, Button, Form, Row, Col } from "react-bootstrap";
 
-const EditarClienteBtn = ({ onEditClick, item }) => {
+
+//item es la info del cliente
+const EditarClienteBtn = ({ onEditClick, item, onUpdateTable}) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
+    // Form input state
+    const [name, setName] = useState(item.name || "");
+    const [email, setEmail] = useState(item.email || "");
+    const [phone, setPhone] = useState(item.phone || "");
+    
   const handleButtonClick = () => {
+    
     console.log(item);
     setShowModal(true);
     if (onEditClick) {
@@ -21,21 +29,75 @@ const EditarClienteBtn = ({ onEditClick, item }) => {
     setShowDeleteConfirmation(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     // Add logic to handle delete confirmation
     setShowDeleteConfirmation(false);
+
+    const config = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const r = await fetch("http://localhost:3000/api/v1/cliente/"+item.idCliente, config).then(
+      (res) => res.json()
+    );
+
+    console.log(r);
+    switch (r.status) {
+      case 401:
+        alert(r.message);
+        break;
+      case 201:
+        onUpdateTable();
+        alert(r.message);
+        handleCloseModal();
+        break;
+    }
+
+
     // Perform delete action
-    handleCloseModal(); // Close main modal after deletion
+    //handleCloseModal(); // Close main modal after deletion
   };
 
   const handleCloseDeleteConfirmation = () => {
     setShowDeleteConfirmation(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Add logic to handle form submission, e.g., updating profile
-    handleCloseModal();
+    const payload ={
+      name:name,
+      email:email,
+      phone:phone,
+    };
+
+    const config = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    };
+
+    const r = await fetch("http://localhost:3000/api/v1/cliente/"+item.idCliente, config).then(
+      (res) => res.json()
+    );
+
+    console.log(r);
+    switch (r.status) {
+      case 401:
+        alert(r.message);
+        break;
+      case 201:
+        onUpdateTable();
+        alert(r.message);
+        handleCloseModal();
+        break;
+    }
+    //handleCloseModal();
   };
 
   const EditarClienteBtn = ({ onEditClick, item }) => {
@@ -73,13 +135,13 @@ const EditarClienteBtn = ({ onEditClick, item }) => {
               <Col>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Nombre</Form.Label>
-                  <Form.Control type="text" placeholder="Jose..." />
+                  <Form.Control type="text" onChange={(e) => setName(e.target.value)} defaultValue={item.name}/>
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Correo</Form.Label>
-                  <Form.Control type="email" placeholder="correo@correo.com" />
+                  <Form.Control type="email" onChange={(e) => setEmail(e.target.value)} defaultValue={item.email} />
                 </Form.Group>
               </Col>
             </Row>
@@ -88,7 +150,7 @@ const EditarClienteBtn = ({ onEditClick, item }) => {
               <Col className="py-2">
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Numero de telefono</Form.Label>
-                  <Form.Control type="text" placeholder="(000) 000-0000" />
+                  <Form.Control type="text"  onChange={(e) => setPhone(e.target.value)} defaultValue={item.phone} />
                 </Form.Group>
               </Col>
             </Row>

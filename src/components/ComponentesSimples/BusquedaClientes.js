@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 
 function BusquedaBoxClientes({ onSearch }) {
-  const handleInputChange = (event) => {
-    const value = event.target.value;
+  const inputRef = useRef(null);
+
+  const handleButtonClick = () => {
+    const value = inputRef.current.value;
+    //console.log(value);
     onSearch(value);
   };
 
@@ -14,10 +17,10 @@ function BusquedaBoxClientes({ onSearch }) {
         placeholder="Buscar..."
         aria-label="Search"
         aria-describedby="basic-addon2"
-        //onChange={handleInputChange}
+        ref={inputRef}
       />
       <div className="input-group-append">
-        <button className="btn btn-outline-secondary" type="button">
+        <button className="btn btn-outline-secondary" type="button" onClick={handleButtonClick}>
           <i className="fa fa-search"></i>
         </button>
       </div>

@@ -1,9 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { InputGroup, FormControl } from "react-bootstrap";
 
-function BtnAgregarPedido() {
+function BtnAgregarPedido({ onUpdateTable, clientes }) {
   const [showModal, setShowModal] = useState(false);
+
+
+ // Form input state
+ const [marca, setMarca] = useState("");
+ const [cliente, setCliente] = useState("");
+ const [modelo, setModelo] = useState("");
+ const [anio, setAnio] = useState("");
+ const [pieza, setPieza] = useState("");
+ const [precio, setPrecio] = useState("");
+ 
+
 
   const handleShowModal = () => {
     setShowModal(true);
@@ -13,10 +24,45 @@ function BtnAgregarPedido() {
     setShowModal(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+   
     e.preventDefault();
     // Add logic to handle form submission, e.g., updating profile
-    handleCloseModal();
+    const payload ={
+      marca:marca,
+      modelo:modelo,
+      cliente:cliente,
+      anio:anio,
+      pieza:pieza,
+      precio:precio,
+    };
+
+    const config = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    };
+
+    const r = await fetch("http://localhost:3000/api/v1/pedido/", config).then(
+      (res) => res.json()
+    );
+
+    console.log(r);
+    switch (r.status) {
+      case 400:
+        alert(r.message);
+        break;
+      case 401:
+        alert(r.message);
+        break;
+      case 201:
+        onUpdateTable();
+        alert(r.message);
+        handleCloseModal();
+        break;
+    }
   };
 
   return (
@@ -39,11 +85,11 @@ function BtnAgregarPedido() {
               <Col>
                 <Form.Group controlId="formBasicName">
                   <Form.Label>Cliente</Form.Label>
-                  <Form.Control as="select">
-                    <option value="">Select...</option>
-                    <option value="electronic">Electronics</option>
-                    <option value="clothing">Clothing</option>
-                    <option value="furniture">Furniture</option>
+                  <Form.Control as="select" onChange={(e) => setCliente(e.target.value)}>
+                  <option value="">Select...</option>
+                  {clientes.map((item) => (
+                   <option value={item.name}>{item.name}</option>
+                  ))}
                     {/* Add more options as needed */}
                   </Form.Control>
                 </Form.Group>
@@ -52,13 +98,13 @@ function BtnAgregarPedido() {
               <Col>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Nombre de pieza</Form.Label>
-                  <Form.Control type="email" placeholder="Pieza..." />
+                  <Form.Control type="text" placeholder="Pieza..." onChange={(e) => setPieza(e.target.value)} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Precio de venta</Form.Label>
-                  <Form.Control type="number" placeholder="$0.00" />
+                  <Form.Control type="number" placeholder="$0.00" onChange={(e) => setPrecio(e.target.value)}/>
                 </Form.Group>
               </Col>
             </Row>
@@ -72,20 +118,21 @@ function BtnAgregarPedido() {
                     min="1900"
                     max="2100"
                     step="1"
-                    defaultValue="2024"
+                    placeholder="2024"
+                    onChange={(e) => setAnio(e.target.value)}
                   />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Marca</Form.Label>
-                  <Form.Control type="email" placeholder="Chvr..." />
+                  <Form.Control type="text" placeholder="Chvr..." onChange={(e) => setMarca(e.target.value)} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Modelo</Form.Label>
-                  <Form.Control type="email" placeholder="AXZ..." />
+                  <Form.Control type="text" placeholder="AXZ..." onChange={(e) => setModelo(e.target.value)}/>
                 </Form.Group>
               </Col>
             </Row>

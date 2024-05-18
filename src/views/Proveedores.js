@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pagination, Modal, Button, Dropdown } from "react-bootstrap";
 import BusquedaBoxClientes from "components/ComponentesSimples/BusquedaClientes";
-import BtnAgregarCliente from "components/Clientes/AgregarClienteBtn";
+import BtnAgregarProveedor from "components/Proveedores/AgregarProveedor";
 import {
   Badge,
   Card,
@@ -19,68 +19,60 @@ function TableList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showEditModal, setShowEditModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [proveedores, setProveedores] = useState([]);
 
   const itemsPerPage = 5;
+
+  const [prevState, setUpdateTable] = useState(0);
+
+  //Aqui obtenemos los proveedores
+  useEffect(() => {
+    const getProveedorData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/v1/proveedor/");
+        if (!response.ok) {
+          throw new Error("Network response was not ok.");
+        }
+        const data = await response.json();
+        setProveedores(data.proveedorList);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    getProveedorData();
+  }, [prevState]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  const getCurrentItems = (data) => {
-    const filteredData = data.filter((item) =>
-      item.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+  const getCurrentItems = () => {
+    const filteredData = proveedores.filter(
+      (item) =>
+        (item.name &&
+          item.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (item.phone &&
+          item.phone.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (item.address &&
+          item.address.toLowerCase().includes(searchQuery.toLowerCase()))
     );
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return filteredData.slice(startIndex, endIndex);
   };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearchChange = (value) => {
+    setSearchQuery(value);
+    console.log(value);
     setCurrentPage(1); // Reset to the first page when searching
-    console.log(currentItems);
   };
 
-  const dummyData = [
-    {
-      id: 1,
-      nombre: "Dakota Rice",
-      telefono: "(000) 000-0000",
-      direccion: "Avenida Universidad #434",
-    },
-    {
-      id: 1,
-      nombre: "Dakota Rice",
-      telefono: "(000) 000-0000",
-      direccion: "Avenida Universidad #434",
-    },
-    {
-      id: 1,
-      nombre: "Dakota Rice",
-      telefono: "(000) 000-0000",
-      direccion: "Avenida Universidad #434",
-    },
-    {
-      id: 1,
-      nombre: "Dakota Rice",
-      telefono: "(000) 000-0000",
-      direccion: "Avenida Universidad #434",
-    },
-    {
-      id: 1,
-      nombre: "Dakota Rice",
-      telefono: "(000) 000-0000",
-      direccion: "Avenida Universidad #434",
-    },
-    {
-      id: 1,
-      nombre: "Dakota Rice",
-      telefono: "(000) 000-0000",
-      direccion: "Avenida Universidad #434",
-    },
-  ];
+  const updateTable = () => {
+    // Cambia el estado para actualizar la tabla
+    setUpdateTable(Math.random());
+  };
 
-  const currentItems = getCurrentItems(dummyData);
+  const currentItems = getCurrentItems();
 
   const handleEditClick = () => {
     setShowEditModal(true);
@@ -96,13 +88,16 @@ function TableList() {
         <Row>
           <Col md="2">
             <Card className="strpied-tabled-with-hover">
-              <BtnAgregarCliente className="py-5"></BtnAgregarCliente>
+              <BtnAgregarProveedor
+                className="py-5"
+                onUpdateTable={updateTable}
+              ></BtnAgregarProveedor>
             </Card>
           </Col>
 
           <Col md="5">
             <Card className="strpied-tabled-with-hover">
-              <BusquedaBoxClientes onChange={handleSearchChange} />
+              <BusquedaBoxClientes onSearch={handleSearchChange} />
             </Card>
           </Col>
 
@@ -127,15 +122,16 @@ function TableList() {
                   </thead>
                   <tbody>
                     {currentItems.map((item) => (
-                      <tr key={item.id}>
-                        <td>{item.id}</td>
-                        <td>{item.nombre}</td>
-                        <td>{item.telefono}</td>
-                        <td>{item.direccion}</td>
+                      <tr key={item.idProveedor}>
+                        <td>{item.idProveedor}</td>
+                        <td>{item.name}</td>
+                        <td>{item.phone}</td>
+                        <td>{item.address}</td>
                         <td>
                           <EditarProveedorBtn
                             onEditClick={handleEditClick}
                             item={item}
+                            onUpdateTable={updateTable}
                           />
                         </td>
                       </tr>
@@ -144,7 +140,9 @@ function TableList() {
                 </Table>
                 <Pagination className="px-2">
                   {[
-                    ...Array(Math.ceil(dummyData.length / itemsPerPage)).keys(),
+                    ...Array(
+                      Math.ceil(proveedores.length / itemsPerPage)
+                    ).keys(),
                   ].map((number) => (
                     <Pagination.Item
                       key={number + 1}

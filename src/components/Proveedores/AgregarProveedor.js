@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import { Button, Modal, Form, Row, Col } from "react-bootstrap";
 import { InputGroup, FormControl } from "react-bootstrap";
 
-function BtnAgregarProveedor() {
+function BtnAgregarProveedor({onUpdateTable}) {
   const [showModal, setShowModal] = useState(false);
+
+   // Form input state
+   const [name, setName] = useState("");
+   const [address, setAddress] = useState("");
+   const [phone, setPhone] = useState("");
 
   const handleShowModal = () => {
     setShowModal(true);
@@ -13,10 +18,41 @@ function BtnAgregarProveedor() {
     setShowModal(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Add logic to handle form submission, e.g., updating profile
-    handleCloseModal();
+    const payload ={
+      name:name,
+      address:address,
+      phone:phone,
+    };
+
+    const config = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    };
+
+    const r = await fetch("http://localhost:3000/api/v1/proveedor/", config).then(
+      (res) => res.json()
+    );
+
+    console.log(r);
+    switch (r.status) {
+      case 400:
+        alert(r.message);
+        break;
+      case 401:
+        alert(r.message);
+        break;
+      case 201:
+        onUpdateTable();
+        alert(r.message);
+        handleCloseModal();
+        break;
+    }
   };
 
   return (
@@ -39,13 +75,13 @@ function BtnAgregarProveedor() {
               <Col>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Nombre</Form.Label>
-                  <Form.Control type="text" placeholder="Jose..." />
+                  <Form.Control type="text" placeholder="Jose..." onChange={(e) => setName(e.target.value)} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Telefono</Form.Label>
-                  <Form.Control type="email" placeholder="correo@correo.com" />
+                  <Form.Control type="text"  placeholder="(000) 000-0000" onChange={(e) => setPhone(e.target.value)}/>
                 </Form.Group>
               </Col>
             </Row>
@@ -54,7 +90,7 @@ function BtnAgregarProveedor() {
               <Col className="py-2">
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Direccion</Form.Label>
-                  <Form.Control type="text" placeholder="Avenida..." />
+                  <Form.Control type="text" placeholder="Avenida..." onChange={(e) => setAddress(e.target.value)}/>
                 </Form.Group>
               </Col>
             </Row>

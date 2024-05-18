@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { Dropdown, Nav, Modal, Button, Form, Row, Col } from "react-bootstrap";
 
-const EditarProveedorBtn = ({ onEditClick, item }) => {
+const EditarProveedorBtn = ({ onEditClick, item, onUpdateTable }) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+  // Form input state
+  const [name, setName] = useState(item.name || "");
+  const [address, setAddress] = useState(item.address || "");
+  const [phone, setPhone] = useState(item.phone || "");
 
   const handleButtonClick = () => {
     console.log(item);
@@ -21,21 +26,73 @@ const EditarProveedorBtn = ({ onEditClick, item }) => {
     setShowDeleteConfirmation(true);
   };
 
-  const handleConfirmDelete = () => {
+  //Aqui se elimina el proveedor
+  const handleConfirmDelete = async () => {
     // Add logic to handle delete confirmation
     setShowDeleteConfirmation(false);
-    // Perform delete action
-    handleCloseModal(); // Close main modal after deletion
+    const config = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const r = await fetch(
+      "http://localhost:3000/api/v1/proveedor/" + item.idProveedor,
+      config
+    ).then((res) => res.json());
+
+    console.log(r);
+    switch (r.status) {
+      case 401:
+        alert(r.message);
+        break;
+      case 201:
+        onUpdateTable();
+        alert(r.message);
+        handleCloseModal();
+        break;
+    }
   };
 
   const handleCloseDeleteConfirmation = () => {
     setShowDeleteConfirmation(false);
   };
 
-  const handleSubmit = (e) => {
+  //Aqui se edita el proveedor
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Add logic to handle form submission, e.g., updating profile
-    handleCloseModal();
+    const payload = {
+      name: name,
+      address: address,
+      phone: phone,
+    };
+
+    const config = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    };
+
+    const r = await fetch(
+      "http://localhost:3000/api/v1/proveedor/" + item.idProveedor,
+      config
+    ).then((res) => res.json());
+
+    console.log(r);
+    switch (r.status) {
+      case 401:
+        alert(r.message);
+        break;
+      case 201:
+        onUpdateTable();
+        alert(r.message);
+        handleCloseModal();
+        break;
+    }
   };
 
   const EditarClienteBtn = ({ onEditClick, item }) => {
@@ -73,14 +130,22 @@ const EditarProveedorBtn = ({ onEditClick, item }) => {
               <Col>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Nombre</Form.Label>
-                  <Form.Control type="text" placeholder="Jose..." />
+                  <Form.Control
+                    type="text"
+                    onChange={(e) => setName(e.target.value)}
+                    defaultValue={item.name}
+                  />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Group controlId="formBasicEmail">
                     <Form.Label>Numero de telefono</Form.Label>
-                    <Form.Control type="text" placeholder="(000) 000-0000" />
+                    <Form.Control
+                      type="text"
+                      onChange={(e) => setPhone(e.target.value)}
+                      defaultValue={item.phone}
+                    />
                   </Form.Group>
                 </Form.Group>
               </Col>
@@ -91,7 +156,8 @@ const EditarProveedorBtn = ({ onEditClick, item }) => {
                 <Form.Label>Dirección</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Avenida Universidad #343"
+                  onChange={(e) => setAddress(e.target.value)}
+                  defaultValue={item.address}
                 />
               </Col>
             </Row>
