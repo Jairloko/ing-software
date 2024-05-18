@@ -35,7 +35,7 @@ function BtnAgregarProveedor({onUpdateTable}) {
       body: JSON.stringify(payload),
     };
 
-    const r = await fetch("http://localhost:3000/api/v1/proveedor/", config).then(
+    const r = await fetch("http://localhost:3001/api/v1/proveedor/", config).then(
       (res) => res.json()
     );
 

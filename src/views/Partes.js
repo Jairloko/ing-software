@@ -30,7 +30,7 @@ function TableList() {
     const getInventarioData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/v1/inventario/"
+          "http://localhost:3001/api/v1/inventario/"
         );
         if (!response.ok) {
           throw new Error("Network response was not ok.");

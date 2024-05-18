@@ -68,7 +68,7 @@ const EditarPedidoBtn = ({
     };
 
     const r = await fetch(
-      "http://localhost:3000/api/v1/pedido/" + item.idPedido,
+      "http://localhost:3001/api/v1/pedido/" + item.idPedido,
       config
     ).then((res) => res.json());
 
@@ -113,7 +113,7 @@ const EditarPedidoBtn = ({
     };
 
     const r = await fetch(
-      "http://localhost:3000/api/v1/pedido/" + item.idPedido,
+      "http://localhost:3001/api/v1/pedido/" + item.idPedido,
       config
     ).then((res) => res.json());
 
@@ -149,7 +149,7 @@ const EditarPedidoBtn = ({
     };
 
     const r = await fetch(
-      "http://localhost:3000/api/v1/gastoExtra/",
+      "http://localhost:3001/api/v1/gastoExtra/",
       config
     ).then((res) => res.json());
 

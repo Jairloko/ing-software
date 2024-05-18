@@ -40,7 +40,7 @@ const EditarClienteBtn = ({ onEditClick, item, onUpdateTable}) => {
       },
     };
 
-    const r = await fetch("http://localhost:3000/api/v1/cliente/"+item.idCliente, config).then(
+    const r = await fetch("http://localhost:3001/api/v1/cliente/"+item.idCliente, config).then(
       (res) => res.json()
     );
 
@@ -82,7 +82,7 @@ const EditarClienteBtn = ({ onEditClick, item, onUpdateTable}) => {
       body: JSON.stringify(payload),
     };
 
-    const r = await fetch("http://localhost:3000/api/v1/cliente/"+item.idCliente, config).then(
+    const r = await fetch("http://localhost:3001/api/v1/cliente/"+item.idCliente, config).then(
       (res) => res.json()
     );
 

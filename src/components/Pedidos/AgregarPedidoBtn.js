@@ -45,7 +45,7 @@ function BtnAgregarPedido({ onUpdateTable, clientes }) {
       body: JSON.stringify(payload),
     };
 
-    const r = await fetch("http://localhost:3000/api/v1/pedido/", config).then(
+    const r = await fetch("http://localhost:3001/api/v1/pedido/", config).then(
       (res) => res.json()
     );
 

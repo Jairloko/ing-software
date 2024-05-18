@@ -37,7 +37,7 @@ const EditarCostoExtra = ({ onEditClick, item, onUpdateTableGasto }) => {
     };
 
     const r = await fetch(
-      "http://localhost:3000/api/v1/gastoExtra/" + item.pedido,
+      "http://localhost:3001/api/v1/gastoExtra/" + item.pedido,
       config
     ).then((res) => res.json());
 
@@ -76,7 +76,7 @@ const EditarCostoExtra = ({ onEditClick, item, onUpdateTableGasto }) => {
     };
 
     const r = await fetch(
-      "http://localhost:3000/api/v1/gastoExtra/" + item.pedido,
+      "http://localhost:3001/api/v1/gastoExtra/" + item.pedido,
       config
     ).then((res) => res.json());
 

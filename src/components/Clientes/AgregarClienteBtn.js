@@ -37,7 +37,7 @@ function BtnAgregarCliente({ onUpdateTable }) {
       body: JSON.stringify(payload),
     };
 
-    const r = await fetch("http://localhost:3000/api/v1/cliente/", config).then(
+    const r = await fetch("http://localhost:3001/api/v1/cliente/", config).then(
       (res) => res.json()
     );
 

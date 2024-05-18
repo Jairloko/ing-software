@@ -33,7 +33,7 @@ function TableList() {
     const getPedidoData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/v1/pedido/dashboard"
+          "http://localhost:3001/api/v1/pedido/dashboard"
         );
         if (!response.ok) {
           throw new Error("Network response was not ok.");

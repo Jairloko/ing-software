@@ -16,7 +16,7 @@ function TableList() {
   useEffect(() => {
     const getClienteData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/cliente/");
+        const response = await fetch("http://localhost:3001/api/v1/cliente/");
         if (!response.ok) {
           throw new Error('Network response was not ok.');
         }

@@ -38,7 +38,7 @@ const EditarProveedorBtn = ({ onEditClick, item, onUpdateTable }) => {
     };
 
     const r = await fetch(
-      "http://localhost:3000/api/v1/proveedor/" + item.idProveedor,
+      "http://localhost:3001/api/v1/proveedor/" + item.idProveedor,
       config
     ).then((res) => res.json());
 
@@ -78,7 +78,7 @@ const EditarProveedorBtn = ({ onEditClick, item, onUpdateTable }) => {
     };
 
     const r = await fetch(
-      "http://localhost:3000/api/v1/proveedor/" + item.idProveedor,
+      "http://localhost:3001/api/v1/proveedor/" + item.idProveedor,
       config
     ).then((res) => res.json());
 

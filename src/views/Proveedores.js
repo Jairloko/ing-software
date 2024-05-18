@@ -29,7 +29,7 @@ function TableList() {
   useEffect(() => {
     const getProveedorData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/proveedor/");
+        const response = await fetch("http://localhost:3001/api/v1/proveedor/");
         if (!response.ok) {
           throw new Error("Network response was not ok.");
         }
